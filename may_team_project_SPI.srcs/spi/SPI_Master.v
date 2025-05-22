@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module SPI_Master (
+module SPI_Master (  
     input            clk,
     input            reset,
     input            cpol,     //새로이 추가된
