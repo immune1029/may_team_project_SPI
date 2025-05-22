@@ -1,0 +1,27 @@
+#-----------------------------------------------------------
+# Vivado v2020.2 (64-bit)
+# SW Build 3064766 on Wed Nov 18 09:12:45 MST 2020
+# IP Build 3064653 on Wed Nov 18 14:17:31 MST 2020
+# Start of session at: Thu May 22 18:23:45 2025
+# Process ID: 9252
+# Current directory: C:/immune_working/may_team_project_SPI
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent13296 C:\immune_working\may_team_project_SPI\may_team_project_SPI.xpr
+# Log file: C:/immune_working/may_team_project_SPI/vivado.log
+# Journal file: C:/immune_working/may_team_project_SPI\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project C:/immune_working/may_team_project_SPI/may_team_project_SPI.xpr
+update_compile_order -fileset sources_1
+file mkdir C:/immune_working/may_team_project_SPI/may_team_project_SPI.srcs/sim_1/new
+set_property SOURCE_SET sources_1 [get_filesets sim_1]
+close [ open C:/immune_working/may_team_project_SPI/may_team_project_SPI.srcs/sim_1/new/tb_spi.v w ]
+add_files -fileset sim_1 C:/immune_working/may_team_project_SPI/may_team_project_SPI.srcs/sim_1/new/tb_spi.v
+update_compile_order -fileset sim_1
+set_property SOURCE_SET sources_1 [get_filesets sim_1]
+close [ open C:/immune_working/may_team_project_SPI/may_team_project_SPI.srcs/sim_1/new/tb_spi.sv w ]
+add_files -fileset sim_1 C:/immune_working/may_team_project_SPI/may_team_project_SPI.srcs/sim_1/new/tb_spi.sv
+export_ip_user_files -of_objects  [get_files C:/immune_working/may_team_project_SPI/may_team_project_SPI.srcs/sim_1/new/tb_spi.v] -no_script -reset -force -quiet
+remove_files  -fileset sim_1 C:/immune_working/may_team_project_SPI/may_team_project_SPI.srcs/sim_1/new/tb_spi.v
+file delete -force C:/immune_working/may_team_project_SPI/may_team_project_SPI.srcs/sim_1/new/tb_spi.v
+update_compile_order -fileset sim_1
+update_compile_order -fileset sim_1
