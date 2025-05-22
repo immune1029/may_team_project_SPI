@@ -1,0 +1,15 @@
+#-----------------------------------------------------------
+# Vivado v2020.2 (64-bit)
+# SW Build 3064766 on Wed Nov 18 09:12:45 MST 2020
+# IP Build 3064653 on Wed Nov 18 14:17:31 MST 2020
+# Start of session at: Thu May 22 18:39:23 2025
+# Process ID: 2288
+# Current directory: C:/immune_working/may_team_project_SPI
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent13416 C:\immune_working\may_team_project_SPI\may_team_project_SPI.xpr
+# Log file: C:/immune_working/may_team_project_SPI/vivado.log
+# Journal file: C:/immune_working/may_team_project_SPI\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project C:/immune_working/may_team_project_SPI/may_team_project_SPI.xpr
+update_compile_order -fileset sources_1
+launch_simulation
