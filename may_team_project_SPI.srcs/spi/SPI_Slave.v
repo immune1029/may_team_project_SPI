@@ -110,7 +110,7 @@ module SPI_Slave_Intf (
             end
             SI_PHASE: begin
                 if (!SS) begin
-                    if (sclk_rising) begin
+                    if (sclk_rising) begin // sclk_rising
                         si_data_next = {si_data_reg[6:0], MOSI};
                         if (si_bit_cnt_reg == 7) begin
                             si_done_next = 1'b1;
@@ -156,7 +156,7 @@ module SPI_Slave_Intf (
         so_state_next = so_state;
         so_bit_cnt_next = so_bit_cnt_reg;
         so_data_next = so_data_reg;
-        so_done_next = 0; // 수정 ********** so_done_reg;
+        so_done_next = so_done_reg; // 수정 ********** so_done_reg;
         case (so_state)
             SO_IDLE: begin
                 so_done_next = 1'b0;
@@ -197,33 +197,35 @@ module SPI_Slave_Reg (
     output           so_start,
     input            so_done
 );
-    localparam IDLE = 0, ADDR_PHASE = 1, WRITE_PHASE = 2, READ_PHASE = 3;
-
-    //reg [7:0] slv_reg0, slv_reg1, slv_reg2, slv_reg3;
+    localparam IDLE = 0, ADDR_PHASE = 1, WRITE_PHASE = 2, READ_DEALY =3, READ_PHASE = 4;
     reg [7:0] slv_reg[0:3];
-    reg [1:0] state, state_next;
+    reg [2:0] state, state_next;
     reg [1:0] addr_reg, addr_next;
     reg so_start_reg, so_start_next;
+    reg [$clog2(50)-1:0] clk_counter_reg, clk_counter_next;
 
     assign so_start = so_start_reg;
 
     always @(posedge clk, posedge reset) begin
         if (reset) begin
-            state <= IDLE;
-            addr_reg <= 0;
-            so_start_reg <= 0;
+            state           <= IDLE;
+            addr_reg        <= 2'b0;
+            so_start_reg    <= 1'b0;
+            clk_counter_reg <= 0;
         end else begin
-            state <= state_next;
-            addr_reg <= addr_next;
-            so_start_reg <= so_start_next;
+            state           <= state_next;
+            addr_reg        <= addr_next;
+            so_start_reg    <= so_start_next;
+            clk_counter_reg <= clk_counter_next;
         end
     end
 
     always @(*) begin
-        state_next = state;
-        addr_next = addr_reg;
-        so_start_next = so_start_reg;
-        so_data = 0;
+        state_next       = state;
+        addr_next        = addr_reg;
+        so_start_next    = so_start_reg;
+        so_data          = 0;
+        clk_counter_next = clk_counter_reg;
         case (state)
             IDLE: begin
                 so_start_next = 1'b0;
@@ -238,7 +240,7 @@ module SPI_Slave_Reg (
                         if (si_data[7]) begin
                             state_next = WRITE_PHASE;
                         end else begin
-                            state_next = READ_PHASE;
+                            state_next = READ_DEALY;
                         end
                     end
                 end else begin
@@ -248,13 +250,8 @@ module SPI_Slave_Reg (
             WRITE_PHASE: begin
                 if (!ss_n) begin
                     if (si_done) begin
-                        case (addr_reg) // 다시 0부터 3까지 순차적으로 저장 -> done신호가 들어온다면 
-                            2'd0: slv_reg[0] = si_data;
-                            2'd1: slv_reg[1] = si_data;
-                            2'd2: slv_reg[2] = si_data;
-                            2'd3: slv_reg[3] = si_data;
-                        endcase
-                        if (addr_reg == 2'd3) begin
+                        slv_reg[addr_reg] = si_data;
+                        if (addr_reg == 3) begin
                             addr_next = 0;
                         end else begin
                             addr_next = addr_reg + 1;
@@ -264,6 +261,14 @@ module SPI_Slave_Reg (
                     state_next = IDLE;
                 end
             end
+            READ_DEALY: begin
+                if (clk_counter_reg == 49) begin
+                    state_next = READ_PHASE;
+                    clk_counter_next = 0;
+                end else begin
+                    clk_counter_next = clk_counter_reg + 1;
+                end
+            end
             READ_PHASE: begin
                 if (!ss_n) begin
                     so_start_next = 1'b1;
@@ -271,10 +276,10 @@ module SPI_Slave_Reg (
                     if (so_done) begin
                         if (addr_reg == 3) begin
                             addr_next = 0;
-                            so_data = slv_reg[0];
+                            so_data   = slv_reg[0];
                         end else begin
                             addr_next = addr_reg + 1;
-                            so_data = slv_reg[addr_reg +1];
+                            so_data   = slv_reg[addr_reg+1];
                         end
                     end
                 end else begin
